@@ -88,7 +88,8 @@ if [[ -f ${FILESEGMANUAL} ]];then
     # Note, this ground truth (GT) segmentation was obtained from reoriented and resampled images (this is why we are applying the same preprocessing steps also below)
     rsync -avzh ${FILESEGMANUAL} ${FILESEG}.nii.gz
     # Fit a regularized centerline on an already-existing cord segmentation.
-    sct_get_centerline -i ${FILESEG}.nii.gz -method fitseg -qc ${PATH_QC} -qc-subject ${SUBJECT}
+    # Note, -centerline-algo bspline and -centerline-smooth 30 is the default setting in SCT v5.8. We make these parameters explicit in case the default values change in future SCT version.
+    sct_get_centerline -i ${FILESEG}.nii.gz -method fitseg -centerline-algo bspline -centerline-smooth 30 -qc ${PATH_QC} -qc-subject ${SUBJECT}
     # Copy centerline to derivatives folder (to be compatible with ivadomed)
     mkdir -p ${PATH_DATA_PROCESSED}/derivatives/labels/${SUBJECT}/anat
     rsync -avzh ${FILESEG}_centerline.nii.gz ${PATH_DATA_PROCESSED}/derivatives/labels/${SUBJECT}/anat/${FILESEG}_centerline.nii.gz
