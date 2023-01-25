@@ -133,7 +133,7 @@ if [[ -f ${file_t2s}.nii.gz ]];then
   sct_maths -i ${file_t2s}.nii.gz -rms t -o ${file_t2s}_rms.nii.gz
   file_t2s="${file_t2s}_rms"
   # Rename _rms file
-  mv ${file_t2s}.nii.gz ${SUBJECT}_T2star.nii.gz
+  mv ${file_t2s}.nii.gz ${file_t2s}_T2star.nii.gz
 fi
 
 
