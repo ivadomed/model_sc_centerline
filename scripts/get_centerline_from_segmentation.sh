@@ -123,6 +123,20 @@ file_mton_mts="${file}_acq-MTon_MTS.nii.gz"
 file_mtoff_mts="${file}_acq-MToff_MTS.nii.gz"
 contrasts=($file_stir $file_psir $file_t2s $file_mt_mts $file_t1_mts $file_mton_mts $file_mtoff_mts)
 
+# Prepare T2star images
+# Check if T2star image exists
+if [[ -f ${file_t2s}.nii.gz ]];then
+  # Rename raw file
+  mv ${file_t2s}.nii.gz ${file_t2s}_raw.nii.gz
+  file_t2s="${file_t2s}_raw"
+  # Compute root-mean square across 4th dimension (if it exists), corresponding to all echoes in Philips scans.
+  sct_maths -i ${file_t2s}.nii.gz -rms t -o ${file_t2s}_rms.nii.gz
+  file_t2s="${file_t2s}_rms"
+  # Rename _rms file
+  mv ${file_t2s}.nii.gz ${SUBJECT}_T2star.nii.gz
+fi
+
+
 # Loop across contrasts
 for contrast in "${contrasts[@]}"; do
     # Check if contrast exists
