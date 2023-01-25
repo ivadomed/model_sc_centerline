@@ -114,13 +114,13 @@ fi
 # Co-register other contrast to T2w
 # -------------------------------------------------------------------------
 # Initialize filenames
-file_stir="${SUBJECT}_STIR"
-file_psir="${SUBJECT}_PSIR"
-file_t2s="${SUBJECT}_T2star"
-file_mt_mts="${SUBJECT}_acq-MT_MTS.nii.gz"
-file_t1_mts="${SUBJECT}_acq-T1w_MTS.nii.gz"
-file_mton_mts="${SUBJECT}_acq-MTon_MTS.nii.gz"
-file_mtoff_mts="${SUBJECT}_acq-MToff_MTS.nii.gz"
+file_stir="${file}_STIR"
+file_psir="${file}_PSIR"
+file_t2s="${file}_T2star"
+file_mt_mts="${file}_acq-MT_MTS.nii.gz"
+file_t1_mts="${file}_acq-T1w_MTS.nii.gz"
+file_mton_mts="${file}_acq-MTon_MTS.nii.gz"
+file_mtoff_mts="${file}_acq-MToff_MTS.nii.gz"
 contrasts=($file_stir $file_psir $file_t2s $file_mt_mts $file_t1_mts $file_mton_mts $file_mtoff_mts)
 
 # Loop across contrasts
