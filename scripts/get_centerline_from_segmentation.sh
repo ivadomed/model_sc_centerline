@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Get centerline from manually corrected T2w segmentation ground truth (GT) for CanProCo dataset
+# Script performs the following steps:
+#     1. Get centerline from manually corrected T2w segmentation ground truth (GT) for CanProCo dataset
+#     2. Co-register other contrast to T2w image
 #
 # Dependencies (versions):
 # - SCT (5.8)
@@ -107,6 +109,33 @@ if [[ -f ${FILESEGMANUAL} ]];then
 else
     echo "${SUBJECT}/${FILESEGMANUAL} does not exist" >> $PATH_LOG/_error_check_input_files.log
 fi
+
+# -------------------------------------------------------------------------
+# Co-register other contrast to T2w
+# -------------------------------------------------------------------------
+# Initialize filenames
+file_stir="${SUBJECT}_STIR"
+file_psir="${SUBJECT}_PSIR"
+file_t2s="${SUBJECT}_T2star"
+file_mt_mts="${SUBJECT}_acq-MT_MTS.nii.gz"
+file_t1_mts="${SUBJECT}_acq-T1w_MTS.nii.gz"
+file_mton_mts="${SUBJECT}_acq-MTon_MTS.nii.gz"
+file_mtoff_mts="${SUBJECT}_acq-MToff_MTS.nii.gz"
+contrasts=($file_stir $file_psir $file_t2s $file_mt_mts $file_t1_mts $file_mton_mts $file_mtoff_mts)
+
+# Loop across contrasts
+for contrast in "${contrasts[@]}"; do
+    # Check if contrast exists
+    if [[ -f ${contrast}.nii.gz ]];then
+        # Bring contrast to T2w space
+        sct_register_multimodal -i ${contrast}.nii.gz -d ${file_t2w}.nii.gz -o ${contrast}2${file_t2w}.nii.gz -identity 1 -x nn
+
+        # Create QC report to assess registration quality
+        # Note: registration quality is assessed by comparing the ${contrast} image to the T2w centerline
+        sct_qc -i ${contrast}2${file_t2w}.nii.gz -s ${FILESEG}_centerline.nii.gz -p sct_get_centerline -qc ${PATH_QC} -qc-subject ${SUBJECT}
+        sct_qc -i ${contrast}2${file_t2w}.nii.gz -s ${FILESEG}_centerline.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+    fi
+done
 
 # -------------------------------------------------------------------------
 # Display useful info for the log
