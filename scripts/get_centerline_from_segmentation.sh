@@ -64,7 +64,8 @@ fi
 
 # Copy source images
 # Note: we use '/./' in order to include the sub-folder 'ses-0X'
-rsync -Ravzh $PATH_DATA/./$SUBJECT .
+# Note: copy only T2w images to save space
+rsync -Ravzh $PATH_DATA/./$SUBJECT/anat/${SUBJECT}_T2w.* .
 # Go to subject folder for source images
 cd ${SUBJECT}/anat
 
