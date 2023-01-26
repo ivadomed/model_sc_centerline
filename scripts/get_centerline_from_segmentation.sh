@@ -117,10 +117,10 @@ fi
 file_stir="${file}_STIR"
 file_psir="${file}_PSIR"
 file_t2s="${file}_T2star"
-file_mt_mts="${file}_acq-MT_MTS.nii.gz"
-file_t1_mts="${file}_acq-T1w_MTS.nii.gz"
-file_mton_mts="${file}_acq-MTon_MTS.nii.gz"
-file_mtoff_mts="${file}_acq-MToff_MTS.nii.gz"
+file_mt_mts="${file}_acq-MT_MTS"
+file_t1_mts="${file}_acq-T1w_MTS"
+file_mton_mts="${file}_acq-MTon_MTS"
+file_mtoff_mts="${file}_acq-MToff_MTS"
 contrasts=($file_stir $file_psir $file_t2s $file_mt_mts $file_t1_mts $file_mton_mts $file_mtoff_mts)
 
 # Prepare T2star images
@@ -133,7 +133,7 @@ if [[ -f ${file_t2s}.nii.gz ]];then
   sct_maths -i ${file_t2s}.nii.gz -rms t -o ${file_t2s}_rms.nii.gz
   file_t2s="${file_t2s}_rms"
   # Rename _rms file
-  mv ${file_t2s}.nii.gz ${file_t2s}_T2star.nii.gz
+  mv ${file_t2s}.nii.gz ${file}_T2star.nii.gz
 fi
 
 
