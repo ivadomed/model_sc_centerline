@@ -117,7 +117,6 @@ fi
 file_stir="${file}_STIR"
 file_psir="${file}_PSIR"
 file_t2s="${file}_T2star"
-file_mt_mts="${file}_acq-MT_MTS"
 file_t1_mts="${file}_acq-T1w_MTS"
 file_mton_mts="${file}_acq-MTon_MTS"
 file_mtoff_mts="${file}_acq-MToff_MTS"
