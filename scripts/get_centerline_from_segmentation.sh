@@ -106,6 +106,9 @@ if [[ -f ${FILESEGMANUAL} ]];then
     # Rename _raw_RPI_r file (to be BIDS compliant)
     mv ${file_t2w}_raw_RPI_r.nii.gz ${file_t2w}.nii.gz
 
+    # Create a mask around the SC segmentation (will be used to increase the accuracy of the registration, see below)
+    sct_create_mask -i ${file_t2w}.nii.gz -p centerline,${FILESEG}.nii.gz -size 35mm -f cylinder -o mask_${file_t2w}.nii.gz
+
 else
     echo "${SUBJECT}/${FILESEGMANUAL} does not exist" >> $PATH_LOG/_error_check_input_files.log
 fi
@@ -146,8 +149,16 @@ fi
 for contrast in "${contrasts[@]}"; do
     # Check if contrast exists
     if [[ -f ${contrast}.nii.gz ]];then
-        # Bring contrast to T2w space
-        sct_register_multimodal -i ${contrast}.nii.gz -d ${file_t2w}.nii.gz -o ${contrast}2${file_t2w}.nii.gz -identity 1 -x nn
+        # Bring contrast to T2w space - use only the qform (from the NIfTI header) (-identity 1)
+        sct_register_multimodal -i ${contrast}.nii.gz -d ${file_t2w}.nii.gz -o ${contrast}2${file_t2w}_identity.nii.gz -identity 1 -x nn -qc ${PATH_QC} -qc-subject ${SUBJECT}
+
+        # Create QC report to assess registration quality
+        # Note: registration quality is assessed by comparing the ${contrast} image to the T2w centerline
+        sct_qc -i ${contrast}2${file_t2w}_identity.nii.gz -s ${FILESEG}_centerline.nii.gz -p sct_get_centerline -qc ${PATH_QC} -qc-subject ${SUBJECT}
+        sct_qc -i ${contrast}2${file_t2w}_identity.nii.gz -s ${FILESEG}_centerline.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+
+        # Register contrast to T2w space - use SC seg and SC mask to increase the accuracy of the registration
+        sct_register_multimodal -i ${contrast}.nii.gz -d ${file_t2w}.nii.gz -dseg ${FILESEG}.nii.gz -m mask_${file_t2w}.nii.gz -o ${contrast}2${file_t2w}.nii.gz -param step=1,type=im,algo=slicereg,metric=MI -x spline -qc ${PATH_QC} -qc-subject ${SUBJECT}
 
         # Create QC report to assess registration quality
         # Note: registration quality is assessed by comparing the ${contrast} image to the T2w centerline
